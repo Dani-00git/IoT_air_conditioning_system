@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Imposta Il Tuo Climatizzatore</title>
+    <meta name="description" content=Impostazioni Climatizzatore>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <script src="scripts/interactions.js" type="text/javascript" > </script>
+    <link rel="stylesheet" href="css/rules.css" type="text/css">
+    
+          
+</head>
+<body>
+    <h1> PANNELLO DI CONTROLLO IMPIANTO DI CLIMATIZZAZIONE</h1>
+    <div id="edificio" class="room"> 
+        <h2 class="nameroom">EDIFICIO</h2>
+        <div class="info">
+        <ul class="lista-1">
+            <li> <p> Metri Quadri Totali:</p> <p> </p> </li>
+            <li> <p> Stanze Totali:</p> <p> </p> </li>
+            <li> <p> Sensori Totali:</p> <p> </p> </li>
+            <li> <p> Climatizzatori Totali:</p> <p> </p> </li>
+        </ul>
+        <ul class="lista-2">
+            <li> <p> Temperatura Media Attuale:</p><p> </p> </li>
+            <li> <p> Temperatura Media ultime 24h:</p> <div id="grafico"></div> </li>
+        </ul>
+        </div>
+        <div class="settings"> 
+            <p> Temperatura Media Desiderata</p> <p> </p>
+            <div class="buttons">
+            <button class="incdec" id="minus"> <p>-</p> </button>
+            <div class="value"  > <p id="temptot"></p></div>
+            <button class="incdec" id="plus"> <p>+</p> </button> 
+            <button class="confirm"> <p>CONFERMA</p></button>
+            </div>
+        </div>
+            
+          
+    
+    </div>
+    
+    <button id="addroom"> <p>Aggiungi stanza  +</p></button>
+    <form class="setRooms">     
+             <ul>
+                 <li>
+                     <p>Nome stanza: </p>
+                     
+                         <input type="text" name="text1" required>
+                 </li>
+                 <li>
+                     <p>Metri quadri: </p>
+                     
+                         <input type=number name="num2" required>
+                     
+                 </li>
+                 <li>
+                     <p>Numero sensori: </p>
+                     
+                         <input type=number name="num3" required>
+                     
+                 </li>
+                 <li>
+                     <p>Numero climatizzatori: </p>
+                     
+                         <input type=number name="num4" required>
+                     
+                  </li>
+             </ul>
+             <button> <p>CONFERMA</p></button>
+        
+        
+    </form>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </body>
