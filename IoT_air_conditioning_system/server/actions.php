@@ -10,14 +10,29 @@
         case "download" :
             downloadData();
         break; 
-        case "setCommands" :
-            setCommands();
+        case "setCommand" :
+            setCommand();
         break; 
-        case "getCommands" :
-            getCommands();
+        case "getCommand" :
+            getCommand();
         break; 
         case "getReading" :
             getReading();
+        break; 
+        case "addRoom" :
+            addRoom();
+        break; 
+        case "removeRoom" :
+            removeRoom();
+        break; 
+        case "getReading" :
+            getReading();
+        break; 
+        case "getBuilding" :
+            getBuilding();
+        break; 
+        case "setPIN" :
+            setPIN();
         break; 
 	}
 
@@ -29,7 +44,7 @@ function downloadData() {
     //WHERE time>"'.$t.'"
     
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
-    mysqli_select_db($link,'sensor_readings_db') or die('Cannot select the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
 
     // esegui la query
     $result = $link->query($query_string); 
@@ -53,41 +68,44 @@ function downloadData() {
 }
  
 function uploadData(){
- 
-    if($_GET['temperature'] != '' and  $_GET['humidity'] != '' and  $_GET['ID'] != ''){
-        $ID = $_GET['ID'];
-        $temperature = $_GET['temperature'];
-        $humidity = $_GET['humidity'];
-        $link='';
-        
-        $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
-        mysqli_select_db($link,'sensor_readings_db') or die('Cannot select the DB');
-        
-        $mydate=getdate();
-        $t = "$mydate[year]-$mydate[mday]-$mydate[mon] $mydate[hours]:$mydate[minutes]:$mydate[seconds]";
-        $query = "insert into sensor_readings set ID = '".$ID."', hum='".$humidity."', temp='".$temperature."', time = '".$t."'";
-        $result = mysqli_query(link,$query) or die('Errant query:  '.$query);
-    }
+    $ID = $_GET['ID'];
+    $temperature = $_GET['temperature'];
+    $humidity = $_GET['humidity'];
+    $link='';
+
+    $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+
+    $mydate=getdate();
+    $t = "$mydate[year]-$mydate[mday]-$mydate[mon] $mydate[hours]:$mydate[minutes]:$mydate[seconds]";
+    $query = "insert into sensor_readings set ID = '".$ID."', hum='".$humidity."', temp='".$temperature."', time = '".$t."'";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
+    
 }
-function setCommands (){
+function setCommand (){
     $PIN = $_GET['PIN'];
     $state = $_GET['state'];
-    $query = "update commands set state = '".$state."' where OUTPIN = '".$OUTPIN ."'";
+    $query = "update commands set state = '".$state."' where PIN = '".$PIN ."'";
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
-    mysqli_select_db($link,'sensor_readings_db') or die('Cannot select the DB');
-    $link->query($query_string); 
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
 }
-function getCommands (){
+function getCommand(){
+    $PIN = $_GET['PIN'];
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
-    mysqli_select_db($link,'sensor_readings_db') or die('Cannot select the DB');
-    $query_string = 'SELECT * FROM commands'; 
-    echo $link->query($query_string); 
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+    $query_string = "SELECT state FROM commands WHERE PIN = '".$PIN ."'"; 
+    $result = $link->query($query_string);
+
+    $row = $result->fetch_array(MYSQLI_ASSOC);
+
+    echo json_encode($row); 
 }
 function getReading(){
     $PIN = $_GET['PIN'];
     
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
-    mysqli_select_db($link,'sensor_readings_db') or die('Cannot select the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
     
     $query_string = "SELECT temp FROM sensor_readings WHERE ID ='".$PIN."' and time=(SELECT max(time) FROM sensor_readings)"; 
     $result = $link->query($query_string);
@@ -95,5 +113,54 @@ function getReading(){
     $row = $result->fetch_array(MYSQLI_ASSOC);
 
     echo json_encode($row); 
+}
+function addRoom(){
+    $name = $_GET['name'];
+    $numSens = $_GET['numSens'];
+    $numCond = $_GET['numCond'];
+    $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+    $query = "insert into building set name = '".$name."', numSens='".$numSens."', numCond='".$numCond."'";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
+}
+function removeRoom(){
+    $room = $_GET['room'];
+    $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+    $query = "DELETE FROM `building` WHERE name = '".$room."'";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
+    $query = "update PINs set room = 'NULL' where PIN = '".$PIN."'";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
+}
+function setPIN(){
+    $room = $_GET['room'];
+    $PIN = $_GET['PIN'];
+    $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+    $query = "update PINs set room = '".$room."' where PIN = '".$PIN."'";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
+}
+function getBuilding(){
+    $query_string = 'SELECT * FROM building'; 
+    
+    $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
+    mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+
+    $result = $link->query($query_string); 
+
+    $builing = array();	
+
+    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+
+        $name = $row['name'];
+        $numSens = $row['numSens'];
+        $numCond = $row['numCond'];
+
+        $room = array('name' => $name,'numSens' =>$numSens, 'numCond' => $numCond);
+        array_push($builing, $room);
+    }
+
+    $response = array('$builing' => $builing, 'type' => 'load');
+    echo json_encode($response);	 
 }
 ?>

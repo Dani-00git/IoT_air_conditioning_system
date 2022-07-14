@@ -1,37 +1,65 @@
+  
 class Building{
     constructor() {
         this.rooms = new Array();
         this.avgTemp;
         this.freeIN = new Array();
         this.freeOUT = new Array();
-        for(let i = 22, i<37, i++){
+        for(let i = 22; i<37; i++){
             this.freeIN.push(i);
         }
-        for(let i = 37, i<52, i++){
+        for(let i = 37; i<52; i++){
             this.freeOUT.push(i);
         }
     }
-    addNewRoom(numSens, numCond, name){
+    addRoom(numSens, numCond, name){
         if(numSens>this.freeIN.length && numCond>this.freeOUT.length){
             return console.log("exeeded");
         }
         var sensPIN = new Array();
         var condPIN = new Array();
         
-        for(let i = 0, i<numSens, i++){
+        for(let i = 0; i<numSens; i++){
             sensPIN.push(this.freeIN.pop(0));
         }
-        for(let i = 0, i<numCond, i++){
+        for(let i = 0; i<numCond; i++){
             condPIN.push(this.freeOUT.pop(0));
         }
         
         let newRoom = new Room(name, sensPIN, condPIN);
         this.rooms.push(newRoom);
+        var request = $.ajax({
+            url: "192.168.0.250:8888",
+            type: "GET",
+            data: {"action" : "addRoom",
+                   "name" : name,
+                   "numSens" : numSens,
+                   "numCond" : numCond},
+            dataType: "json",
+        });  
+        for(let i = 0; i<sensPIN.length; i++){
+            var request = $.ajax({
+                url: "192.168.0.250:8888",
+                type: "GET",
+                data: {"action" : "setPIN",
+                       "room" : name,
+                       "PIN" : sensPIN[i]},
+                dataType: "json",
+            });  
+        }
+        
     }
     removeRoom(room){
         this.rooms.pop(room);
         this.freeIN.concat(room.inPINS);
         this.freeOUT.concat(room.outPINS);
+        var request = $.ajax({
+            url: "192.168.0.250:8888",
+            type: "GET",
+            data: {"action" : "removeRoom",
+                   "room" : room.name},
+            dataType: "json",
+        });  
     }
     
     calcAvgTemp(){
@@ -77,16 +105,15 @@ class Room{
             url: "192.168.0.250:8888",
             type: "GET",
             data: {"action" : "setCommand",
-                   "PIN" : this.outPINS[i]},
-                   "state" : this.switch,
+                   "PIN" : this.outPINS[i],
+                   "state" : this.switch},
             dataType: "json",
             });   
                 
         }
     }
 }
-    
-}
+
 var i = 0;
 var k;
 
@@ -95,24 +122,25 @@ document.addEventListener(
    function() {
        console.log('DOMContentLoaded');
        var addRoom;
+       let b = new Building();
        document.getElementById("plus").addEventListener(
            'click',
            function() {
-                   document.getElementById("temptot").innerHTML++;
+                    document.getElementById("temptot").innerHTML++;
            });
        document.getElementById("minus").addEventListener(
            'click',
            function() {
-                   document.getElementById("temptot").innerHTML--;
+                    document.getElementById("temptot").innerHTML--;
            });
        document.getElementById("confirm").addEventListener(
            'click',
            function() {
-                   document.getElementById("temptot").innerHTML;
+                    document.getElementById("temptot").innerHTML;
            });
        
        
-     addRoom = document.querySelector("#addroom");
+       addRoom = document.querySelector("#addroom");
        addRoom.addEventListener("click", addNewRoom); 
        
 }
@@ -197,4 +225,4 @@ function compileForm()   {
     
     var form4 = document.createElement("form");
     li4.appendChild(form4);
-}   
+} 
