@@ -1,4 +1,3 @@
-  
 class Building{
     constructor() {
         this.rooms = new Array();
@@ -108,8 +107,7 @@ class Room{
                    "PIN" : this.outPINS[i],
                    "state" : this.switch},
             dataType: "json",
-            });   
-                
+            });
         }
     }
 }

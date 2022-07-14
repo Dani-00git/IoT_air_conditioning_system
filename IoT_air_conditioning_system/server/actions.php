@@ -37,11 +37,11 @@
 	}
 
 function downloadData() {
-    //$mydate=getdate();
-    //$day = $mydate[mday]-1;
-    //$t = "$mydate[year]-$day-$mydate[mon] $mydate[hours]:$mydate[minutes]:$mydate[seconds]";
-    $query_string = 'SELECT * FROM sensor_readings ORDER BY time DESC'; 
-    //WHERE time>"'.$t.'"
+    $mydate=getdate();
+    $day = $mydate[mday]-1;
+    $t = "$mydate[year]-$day-$mydate[mon] $mydate[hours]:$mydate[minutes]:$mydate[seconds]";
+    $query_string = 'SELECT * FROM sensor_readings WHERE time> "'.$t.'" ORDER BY time DESC';
+
     
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
     mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
@@ -80,7 +80,6 @@ function uploadData(){
     $t = "$mydate[year]-$mydate[mday]-$mydate[mon] $mydate[hours]:$mydate[minutes]:$mydate[seconds]";
     $query = "insert into sensor_readings set ID = '".$ID."', hum='".$humidity."', temp='".$temperature."', time = '".$t."'";
     $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
-    
 }
 function setCommand (){
     $PIN = $_GET['PIN'];
@@ -107,8 +106,8 @@ function getReading(){
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
     mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
     
-    $query_string = "SELECT temp FROM sensor_readings WHERE ID ='".$PIN."' and time=(SELECT max(time) FROM sensor_readings)"; 
-    $result = $link->query($query_string);
+    $query = "SELECT temp FROM sensor_readings WHERE ID ='".$PIN."' and time=(SELECT max(time) FROM sensor_readings)";
+    $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
 
     $row = $result->fetch_array(MYSQLI_ASSOC);
 
@@ -118,8 +117,10 @@ function addRoom(){
     $name = $_GET['name'];
     $numSens = $_GET['numSens'];
     $numCond = $_GET['numCond'];
+
     $link = mysqli_connect('localhost','PPM','localhost') or die('Cannot connect to the DB');
     mysqli_select_db($link,'air_conditioning_system_db') or die('Cannot select the DB');
+
     $query = "insert into building set name = '".$name."', numSens='".$numSens."', numCond='".$numCond."'";
     $result = mysqli_query($link,$query) or die('Errant query:  '.$query);
 }
